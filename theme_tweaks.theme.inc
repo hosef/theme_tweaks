@@ -13,7 +13,7 @@
  *
  * @ingroup themeable
  */
-function theme_color_scheme_form($variables) {
+function theme_theme_tweaks_scheme_form($variables) {
   $form = $variables['form'];
 
   $theme = $form['theme']['#value'];

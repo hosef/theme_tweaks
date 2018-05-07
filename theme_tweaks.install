@@ -8,34 +8,34 @@
 /**
  * Implements hook_requirements().
  */
-function color_requirements($phase) {
+function theme_tweaks_requirements($phase) {
   $requirements = array();
 
   if ($phase == 'runtime') {
     // Check for the PHP GD library.
     if (function_exists('imagegd2')) {
       $info = gd_info();
-      $requirements['color_gd'] = array(
+      $requirements['them_tweaks_gd'] = array(
         'value' => $info['GD Version'],
       );
 
       // Check for PNG support.
       if (function_exists('imagecreatefrompng')) {
-        $requirements['color_gd']['severity'] = REQUIREMENT_OK;
+        $requirements['them_tweaks_gd']['severity'] = REQUIREMENT_OK;
       }
       else {
-        $requirements['color_gd']['severity'] = REQUIREMENT_WARNING;
-        $requirements['color_gd']['description'] = t('The GD library for PHP is enabled, but was compiled without PNG support. Check the <a href="@url">PHP image documentation</a> for information on how to correct this.', array('@url' => 'http://www.php.net/manual/ref.image.php'));
+        $requirements['them_tweaks_gd']['severity'] = REQUIREMENT_WARNING;
+        $requirements['them_tweaks_gd']['description'] = t('The GD library for PHP is enabled, but was compiled without PNG support. Check the <a href="@url">PHP image documentation</a> for information on how to correct this.', array('@url' => 'http://www.php.net/manual/ref.image.php'));
       }
     }
     else {
-      $requirements['color_gd'] = array(
+      $requirements['them_tweaks_gd'] = array(
         'value' => t('Not installed'),
         'severity' => REQUIREMENT_ERROR,
         'description' => t('The GD library for PHP is missing or outdated. Check the <a href="@url">PHP image documentation</a> for information on how to correct this.', array('@url' => 'http://www.php.net/manual/book.image.php')),
       );
     }
-    $requirements['color_gd']['title'] = t('GD library PNG support');
+    $requirements['them_tweaks_gd']['title'] = t('GD library PNG support');
   }
 
   return $requirements;
@@ -44,7 +44,7 @@ function color_requirements($phase) {
 /**
  * Convert color module settings to config files.
  */
-function color_update_1000() {
+function them_tweaks_update_1000() {
   $themes = list_themes();
   foreach ($themes as $theme_key => $theme_info) {
     if ($palette = update_variable_get('color_' . $theme_key . '_palette')) {

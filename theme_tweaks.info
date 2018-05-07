@@ -1,0 +1,6 @@
+name = Theme Tweaks
+description = Allows administrators to change things such as the colors of themes.
+package = Appearance
+version = 1.x-dev
+type = module
+backdrop = 1.x
