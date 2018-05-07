@@ -15,27 +15,27 @@ function theme_tweaks_requirements($phase) {
     // Check for the PHP GD library.
     if (function_exists('imagegd2')) {
       $info = gd_info();
-      $requirements['them_tweaks_gd'] = array(
+      $requirements['theme_tweaks_gd'] = array(
         'value' => $info['GD Version'],
       );
 
       // Check for PNG support.
       if (function_exists('imagecreatefrompng')) {
-        $requirements['them_tweaks_gd']['severity'] = REQUIREMENT_OK;
+        $requirements['theme_tweaks_gd']['severity'] = REQUIREMENT_OK;
       }
       else {
-        $requirements['them_tweaks_gd']['severity'] = REQUIREMENT_WARNING;
-        $requirements['them_tweaks_gd']['description'] = t('The GD library for PHP is enabled, but was compiled without PNG support. Check the <a href="@url">PHP image documentation</a> for information on how to correct this.', array('@url' => 'http://www.php.net/manual/ref.image.php'));
+        $requirements['theme_tweaks_gd']['severity'] = REQUIREMENT_WARNING;
+        $requirements['theme_tweaks_gd']['description'] = t('The GD library for PHP is enabled, but was compiled without PNG support. Check the <a href="@url">PHP image documentation</a> for information on how to correct this.', array('@url' => 'http://www.php.net/manual/ref.image.php'));
       }
     }
     else {
-      $requirements['them_tweaks_gd'] = array(
+      $requirements['theme_tweaks_gd'] = array(
         'value' => t('Not installed'),
         'severity' => REQUIREMENT_ERROR,
         'description' => t('The GD library for PHP is missing or outdated. Check the <a href="@url">PHP image documentation</a> for information on how to correct this.', array('@url' => 'http://www.php.net/manual/book.image.php')),
       );
     }
-    $requirements['them_tweaks_gd']['title'] = t('GD library PNG support');
+    $requirements['theme_tweaks_gd']['title'] = t('GD library PNG support');
   }
 
   return $requirements;
@@ -44,7 +44,7 @@ function theme_tweaks_requirements($phase) {
 /**
  * Convert color module settings to config files.
  */
-function them_tweaks_update_1000() {
+function theme_tweaks_update_1000() {
   $themes = list_themes();
   foreach ($themes as $theme_key => $theme_info) {
     if ($palette = update_variable_get('color_' . $theme_key . '_palette')) {
