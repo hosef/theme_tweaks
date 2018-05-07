@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- * Theme functions for the Color module.
+ * Theme functions for the Theme Tweaks module.
  */
 
 /**
@@ -21,7 +21,7 @@ function theme_theme_tweaks_scheme_form($variables) {
   $path = backdrop_get_path('theme', $theme) . '/';
   backdrop_add_css($path . $info['preview_css']);
 
-  $preview_js_path = isset($info['preview_js']) ? $path . $info['preview_js'] : backdrop_get_path('module', 'color') . '/js/color.preview.js';
+  $preview_js_path = isset($info['preview_js']) ? $path . $info['preview_js'] : backdrop_get_path('module', 'theme_tweaks') . '/js/theme_tweaks.preview.js';
   // Add the JS at a weight below color.js.
   backdrop_add_js($preview_js_path, array('weight' => -1));
 
@@ -40,7 +40,7 @@ function theme_theme_tweaks_scheme_form($variables) {
   $output .= '<div class="color-preview">';
   $output .= '<h2>' . t('Preview') . '</h2>';
   // Attempt to load preview HTML if the theme provides it.
-  $preview_html_path = BACKDROP_ROOT . '/' . (isset($info['preview_html']) ? backdrop_get_path('theme', $theme) . '/' . $info['preview_html'] : backdrop_get_path('module', 'color') . '/preview.html');
+  $preview_html_path = BACKDROP_ROOT . '/' . (isset($info['preview_html']) ? backdrop_get_path('theme', $theme) . '/' . $info['preview_html'] : backdrop_get_path('module', 'theme_tweaks') . '/preview.html');
   $output .= file_get_contents($preview_html_path);
   // Close the wrapper divs.
   $output .= '</div>';

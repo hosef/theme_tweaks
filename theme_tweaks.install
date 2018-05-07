@@ -2,44 +2,8 @@
 
 /**
  * @file
- * Install, update and uninstall functions for the color module.
+ * Install, update and uninstall functions for the theme_tweaks module.
  */
-
-/**
- * Implements hook_requirements().
- */
-function theme_tweaks_requirements($phase) {
-  $requirements = array();
-
-  if ($phase == 'runtime') {
-    // Check for the PHP GD library.
-    if (function_exists('imagegd2')) {
-      $info = gd_info();
-      $requirements['theme_tweaks_gd'] = array(
-        'value' => $info['GD Version'],
-      );
-
-      // Check for PNG support.
-      if (function_exists('imagecreatefrompng')) {
-        $requirements['theme_tweaks_gd']['severity'] = REQUIREMENT_OK;
-      }
-      else {
-        $requirements['theme_tweaks_gd']['severity'] = REQUIREMENT_WARNING;
-        $requirements['theme_tweaks_gd']['description'] = t('The GD library for PHP is enabled, but was compiled without PNG support. Check the <a href="@url">PHP image documentation</a> for information on how to correct this.', array('@url' => 'http://www.php.net/manual/ref.image.php'));
-      }
-    }
-    else {
-      $requirements['theme_tweaks_gd'] = array(
-        'value' => t('Not installed'),
-        'severity' => REQUIREMENT_ERROR,
-        'description' => t('The GD library for PHP is missing or outdated. Check the <a href="@url">PHP image documentation</a> for information on how to correct this.', array('@url' => 'http://www.php.net/manual/book.image.php')),
-      );
-    }
-    $requirements['theme_tweaks_gd']['title'] = t('GD library PNG support');
-  }
-
-  return $requirements;
-}
 
 /**
  * Convert color module settings to config files.

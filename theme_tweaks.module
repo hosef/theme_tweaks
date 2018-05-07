@@ -20,7 +20,7 @@ function theme_tweaks_theme() {
  * Implements hook_form_FORM_ID_alter().
  */
 function theme_tweaks_form_system_theme_settings_alter(&$form, &$form_state) {
-  if (isset($form_state['build_info']['args'][0]) && ($theme = $form_state['build_info']['args'][0]) && theme_tweaks_get_info($theme) && function_exists('gd_info')) {
+  if (isset($form_state['build_info']['args'][0]) && ($theme = $form_state['build_info']['args'][0]) && theme_tweaks_get_info($theme)) {
     $form['color'] = array(
       '#type' => 'fieldset',
       '#title' => t('Color scheme'),
@@ -179,18 +179,17 @@ function theme_tweaks_scheme_form($complete_form, &$form_state, $theme) {
       ),
       // Add custom CSS.
       'css' => array(
-        $base . '/css/color.admin.css' => array(),
+        $base . '/css/theme_tweaks.admin.css' => array(),
       ),
       // Add custom JavaScript.
       'js' => array(
-        $base . '/js/color.js',
+        $base . '/js/theme_tweaks.js',
         array(
           'data' => array(
             'color' => array(
               'reference' => theme_tweaks_get_palette($theme, TRUE),
               'schemes' => $schemes,
             ),
-            'gradients' => $info['gradients'],
           ),
           'type' => 'setting',
         ),
@@ -368,11 +367,6 @@ function theme_tweaks_scheme_form_submit($form, &$form_state) {
     $paths['files'][] = $filepath;
   }
 
-  // Render new images, if image has been provided.
-  if ($info['base_image']) {
-    _theme_tweaks_render_images($theme, $info, $paths, $palette);
-  }
-
   // Rewrite theme stylesheets.
   $css = array();
   foreach ($info['css'] as $stylesheet) {
@@ -499,76 +493,6 @@ function _theme_tweaks_save_stylesheet($file, $style, &$paths) {
 }
 
 /**
- * Renders images that match a given palette.
- */
-function _theme_tweaks_render_images($theme, &$info, &$paths, $palette) {
-  // Prepare template image.
-  $source = $paths['source'] . '/' . $info['base_image'];
-  $source = imagecreatefrompng($source);
-  $width = imagesx($source);
-  $height = imagesy($source);
-
-  // Prepare target buffer.
-  $target = imagecreatetruecolor($width, $height);
-  imagealphablending($target, TRUE);
-
-  // Fill regions of solid color.
-  foreach ($info['fill'] as $color => $fill) {
-    imagefilledrectangle($target, $fill[0], $fill[1], $fill[0] + $fill[2], $fill[1] + $fill[3], _theme_tweaks_gd($target, $palette[$color]));
-  }
-
-  // Render gradients.
-  foreach ($info['gradients'] as $gradient) {
-    // Get direction of the gradient.
-    if (isset($gradient['direction']) && $gradient['direction'] == 'horizontal') {
-      // Horizontal gradient.
-      for ($x = 0; $x < $gradient['dimension'][2]; $x++) {
-        $color = _theme_tweaks_blend($target, $palette[$gradient['colors'][0]], $palette[$gradient['colors'][1]], $x / ($gradient['dimension'][2] - 1));
-        imagefilledrectangle($target, ($gradient['dimension'][0] + $x), $gradient['dimension'][1], ($gradient['dimension'][0] + $x + 1), ($gradient['dimension'][1] + $gradient['dimension'][3]), $color);
-      }
-    }
-    else {
-      // Vertical gradient.
-      for ($y = 0; $y < $gradient['dimension'][3]; $y++) {
-        $color = _theme_tweaks_blend($target, $palette[$gradient['colors'][0]], $palette[$gradient['colors'][1]], $y / ($gradient['dimension'][3] - 1));
-        imagefilledrectangle($target, $gradient['dimension'][0], $gradient['dimension'][1] + $y, $gradient['dimension'][0] + $gradient['dimension'][2], $gradient['dimension'][1] + $y + 1, $color);
-      }
-    }
-  }
-
-  // Blend over template.
-  imagecopy($target, $source, 0, 0, 0, 0, $width, $height);
-
-  // Clean up template image.
-  imagedestroy($source);
-
-  // Cut out slices.
-  foreach ($info['slices'] as $file => $coord) {
-    list($x, $y, $width, $height) = $coord;
-    $base = backdrop_basename($file);
-    $image = backdrop_realpath($paths['target'] . $base);
-
-    // Cut out slice.
-    $slice = imagecreatetruecolor($width, $height);
-    imagecopy($slice, $target, 0, 0, $x, $y, $width, $height);
-
-    // Save image.
-    imagepng($slice, $image);
-    imagedestroy($slice);
-    $paths['files'][] = $image;
-
-    // Set standard file permissions for webserver-generated files
-    backdrop_chmod($image);
-
-    // Build before/after map of image paths.
-    $paths['map'][$file] = $base;
-  }
-
-  // Clean up target buffer.
-  imagedestroy($target);
-}
-
-/**
  * Shifts a given color, using a reference pair and a target blend color.
  *
  * Note: this function is significantly different from the JS version, as it
@@ -625,28 +549,6 @@ function _theme_tweaks_shift($given, $ref1, $ref2, $target) {
 
   // Return hex color.
   return _theme_tweaks_pack($result, TRUE);
-}
-
-/**
- * Converts a hex triplet into a GD color.
- */
-function _theme_tweaks_gd($img, $hex) {
-  $c = array_merge(array($img), _theme_tweaks_unpack($hex));
-  return call_user_func_array('imagecolorallocate', $c);
-}
-
-/**
- * Blends two hex colors and returns the GD color.
- */
-function _theme_tweaks_blend($img, $hex1, $hex2, $alpha) {
-  $in1 = _theme_tweaks_unpack($hex1);
-  $in2 = _theme_tweaks_unpack($hex2);
-  $out = array($img);
-  for ($i = 0; $i < 3; ++$i) {
-    $out[] = $in1[$i] + ($in2[$i] - $in1[$i]) * $alpha;
-  }
-
-  return call_user_func_array('imagecolorallocate', $out);
 }
 
 /**
