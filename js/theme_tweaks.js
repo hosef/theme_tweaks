@@ -9,7 +9,7 @@ Backdrop.behaviors.color = {
   attach: function (context, settings) {
     var i, j, colors;
     // This behavior attaches by ID, so is only valid once on a page.
-    var form = $('#system-theme-settings .color-form', context).once('color');
+    var form = $('.color-form', context).once('color');
     if (form.length == 0) {
       return;
     }
