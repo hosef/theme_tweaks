@@ -43,6 +43,18 @@ function theme_tweaks_theme() {
   );
 }
 
+function theme_tweaks_system_themes_page_alter($theme_groups) {
+  foreach ($theme_groups['enabled'] as $key => $theme) {
+    array_unshift($theme_groups['enabled'][$key]->operations, array(
+      'title' => t('Change colors'),
+      'href' => 'admin/appearance/color/' . $theme->name,
+      'attributes' => array(
+        'title' => t('Change colors'),
+      ),
+    ));
+  }
+}
+
 /**
  * Implements hook_css_alter().
  *
